@@ -1,7 +1,7 @@
 # Afanasy binaries
 
 archives
-bin
+bin*
 
 # Non root user
 nonrootuser
