@@ -31,8 +31,8 @@ export AF_GUI=$gui
 
 cgru_python="${cgru}/python"
 if [ -d "${cgru_python}" ]; then
-	export AF_PYTHON_INCLUDE_PATH="${cgru_python}/include/python3.3m"
-	export AF_PYTHON_LIBRARIES="${cgru_python}/lib/libpython3.3m.a"
+	export AF_PYTHON_INCLUDE_PATH="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/include"
+	export AF_PYTHON_LIBRARIES="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib"
 fi
 
 
@@ -77,7 +77,9 @@ case ${DISTRIBUTIVE} in
         export AF_ADD_LFLAGS="$AF_ADD_LFLAGS -lpthread -ldl"
         ;;
     MacOSX)
-        ;;
+        export AF_PYTHON_INCLUDE_PATH="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/"
+        export AF_PYTHON_LIBRARIES="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib"
+	;;
     *)
         echo "Warning: Untested system: '${DISTRIBUTIVE}'"
         ;;
