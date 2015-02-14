@@ -29,6 +29,7 @@ RenderNode.prototype.init = function()
 	this.elResources = document.createElement('div');
 	this.element.appendChild( this.elResources);
 	this.elResources.className = 'resources';
+	this.elResources.style.display = 'none';
 
 	this.elNewLine = document.createElement('br');
 	this.element.appendChild( this.elNewLine);
@@ -44,12 +45,12 @@ RenderNode.prototype.init = function()
 	this.elAnnotation.style.textAlign = 'center';
 
 	this.plotters = [];
-	this.plotterC = new Plotter( this.plotters, this.elResources, 'C', 'CPU');
-	this.plotterM = new Plotter( this.plotters, this.elResources, 'M', 'Memory');
-	this.plotterS = new Plotter( this.plotters, this.elResources, 'S', 'Swap');
-	this.plotterH = new Plotter( this.plotters, this.elResources, 'H', 'HDD Space');
-	this.plotterN = new Plotter( this.plotters, this.elResources, 'N', 'Network I/O');
-	this.plotterD = new Plotter( this.plotters, this.elResources, 'D', 'Disk I/O');
+	this.plotterC = new Plotter( this.elResources, 'C', 'CPU');         this.plotters.push( this.plotterC);
+	this.plotterM = new Plotter( this.elResources, 'M', 'Memory');      this.plotters.push( this.plotterM);
+	this.plotterS = new Plotter( this.elResources, 'S', 'Swap');        this.plotters.push( this.plotterS);
+	this.plotterH = new Plotter( this.elResources, 'H', 'HDD Space');   this.plotters.push( this.plotterH);
+	this.plotterN = new Plotter( this.elResources, 'N', 'Network I/O'); this.plotters.push( this.plotterN);
+	this.plotterD = new Plotter( this.elResources, 'D', 'Disk I/O');    this.plotters.push( this.plotterD);
 
 	this.plotterC.addGraph();
 	this.plotterC.setColor([200,   0,  0]);
@@ -81,6 +82,8 @@ RenderNode.prototype.init = function()
 	this.plotterD.setScale(-1, 10000, 100000);
 	this.plotterD.setAutoScale( 1000, 100000);
 
+	this.plottersCs = [];
+
 	this.elPower = document.createElement('div');
 	this.elPower.classList.add('power');
 	this.element.appendChild( this.elPower);
@@ -109,9 +112,11 @@ RenderNode.prototype.update = function( i_obj)
 			// or resources reciedved fisrt time,
 			// we need to set plotter scales:
 
+			this.elResources.style.display = 'block';
+
 			this.plotterC.setTitle('CPU: '+r.cpu_mhz+' MHz x'+r.cpu_num);
 
-			this.plotterM.setTitle('Memory: '+r.mem_total_mb+' Mb');
+			this.plotterM.setTitle('Memory:\nTotal: '+r.mem_total_mb+' Mb');
 			this.plotterM.setScale( r.mem_total_mb, 85 * r.mem_total_mb / 100, r.mem_total_mb);
 
 			if( r.swap_total_mb > 0 )
@@ -130,6 +135,16 @@ RenderNode.prototype.update = function( i_obj)
 			this.plotterH.setScale( r.hdd_total_gb, 95 * r.hdd_total_gb / 100, r.hdd_total_gb);
 		}
 
+		var pl_w = Math.round( this.element.clientWidth / 11 - 4);
+		for( var i = 0; i < this.plotters.length; i++)
+		{
+			this.plotters[i].setWidth( pl_w);
+			var dx = this.plotters[i].width + 8;
+			this.plotters[i].element.style.left = (-3*dx + i * dx) + 'px';
+			this.plotters[i].element.style.top = '2px';
+		}
+
+
 		this.host_resources = r;
 
 		var usr = r.cpu_user + r.cpu_nice;
@@ -139,7 +154,7 @@ RenderNode.prototype.update = function( i_obj)
 
 		var mem = r.mem_total_mb - r.mem_free_mb;
 		var buf = r.mem_cached_mb + r.mem_buffers_mb;
-		this.plotterM.appendTitle('\n-buffered: '+buf+'\nUsed: '+mem+' Mb');
+		this.plotterM.appendTitle('\nUsed: '+mem+'Mb\nCached: '+buf+' Mb\nFree: '+r.mem_free_mb+'Mb');
 		this.plotterM.addValues([ mem, buf]);
 
 		this.plotterS.addValues([ r.swap_used_mb]);
@@ -159,6 +174,41 @@ RenderNode.prototype.update = function( i_obj)
 
 		this.params.tasks_percents = i_obj.tasks_percents;
 		this.updateTasksPercents();
+
+		if( r.custom )
+		{
+			if( this.plottersCs.length != r.custom.length )
+			{
+				this.plottersCsDelete();
+				this.elPlottersCs = document.createElement('div');
+				this.elPlottersCs.classList.add('plotters_custom_div');
+				this.element.appendChild( this.elPlottersCs);
+				for( var i = 0; i < r.custom.length; i++)
+				{	
+					var plotter = new Plotter( this.elPlottersCs, 'Cs', 'custom');
+					this.plottersCs.push( plotter);
+					plotter.element.classList.add('custom');
+					plotter.addGraph();
+					plotter.setColor([50, 200, 20], [ 255, 0, 0]);
+				}
+			}
+
+			for( var i = 0; i < r.custom.length; i++)
+			{
+				this.plottersCs[i].setWidth( Math.round( this.elPlottersCs.clientWidth / r.custom.length ) - 6);
+				this.plottersCs[i].setHeight( r.custom[i].height);
+				this.plottersCs[i].setScale( r.custom[i].value_max);
+				this.plottersCs[i].setColor( r.custom[i].graph_clr);
+				this.plottersCs[i].addValues([r.custom[i].value]);
+				this.plottersCs[i].setLabel( r.custom[i].label, r.custom[i].label_clr, r.custom[i].label_size);
+				this.plottersCs[i].setBGColor( r.custom[i].back_clr);
+				this.plottersCs[i].setTitle( r.custom[i].tooltip);
+			}
+		}
+		else if(( r.custom == null ) && ( this.plottersCs.length ))
+		{
+			this.plottersCsDelete();
+		}
 
 		return;
 	}
@@ -187,9 +237,6 @@ RenderNode.prototype.update = function( i_obj)
 	else
 		this.elAnnotation.textContent = '';
 
-	for( var i = 0; i < this.plotters.length; i++)
-		this.plotters[i].setHidden( this.state.OFF)
-
 	if( this.state.WWK ) this.offlineState = 'Waking Up';
 	else if( this.state.WSL || this.state.WFL) this.offlineState = 'Sleeping';
 	else this.offlineState = 'Offline';
@@ -199,6 +246,9 @@ RenderNode.prototype.update = function( i_obj)
 	{
 		this.elStar.style.display = 'none';
 		this.clearTasks();
+this.plottersCsDelete();
+this.elResources.style.display = 'none';
+this.host_resources = null;
 		this.elCapacity.textContent = '';
 		this.elMaxTasks.textContent = '';
 		this.state.textContent = '';
@@ -237,6 +287,21 @@ RenderNode.prototype.update = function( i_obj)
 
 	this.updateTasksPercents();
 	this.refresh();
+}
+
+RenderNode.prototype.plottersCsDelete = function()
+{
+	if( this.plottersCs.length == 0 )
+		return;
+
+	for( var i = 0; i < this.plottersCs.length; i++ )
+	{
+		this.elPlottersCs.removeChild( this.plottersCs[i].element );
+		delete this.plottersCs[i];
+	}
+
+	this.element.removeChild( this.elPlottersCs);
+	this.plottersCs = [];
 }
 
 RenderNode.prototype.clearTasks = function()
@@ -372,11 +437,12 @@ RenderNode.prototype.onDoubleClick = function( e)
 	nw_request({"send":{"get":{"type":'renders',"ids":[this.params.id],"mode":'full'}},"func":g_ShowObject,"evt":e,"wnd":this.monitor.window});
 }
 
-RenderNode.prototype.mh_Service = function( i_param)
+RenderNode.setService = function( i_args)
 {
-//	new cgru_Dialog( this.monitor.window, this, 'serviceApply', i_name, 'str', null, this.type+'_parameter', (i_name == 'enable' ? 'Enable':'Disable') + ' Service', 'Enter Service Name:');
-	new cgru_Dialog({"wnd":this.monitor.window,"receiver":this,"handle":'serviceApply',"param":i_param.name,
-		"name":this.type+'_parameter',"title":(i_param.name == 'enable' ? 'Enable':'Disable') + ' Service',"info":'Enter Service Name:'});
+//	new cgru_Dialog({"wnd":this.monitor.window,"receiver":this,"handle":'serviceApply',"param":i_param.name,
+//		"name":'serivce',"title":(i_param.name == 'enable' ? 'Enable':'Disable') + ' Service',"info":'Enter Service Name:'});
+	new cgru_Dialog({"wnd":i_args.monitor.window,"receiver":i_args.monitor.cur_item,"handle":'serviceApply',"param":i_args.name,
+		"name":'serivce',"title":(i_args.name == 'enable' ? 'Enable':'Disable') + ' Service',"info":'Enter Service Name:'});
 }
 RenderNode.prototype.serviceApply = function( i_value, i_name)
 {
@@ -462,9 +528,40 @@ RenderTask.prototype.destroy = function()
 }
 
 
+RenderNode.createPanels = function( i_monitor)
+{
+	// Services:
+	var acts = {};
+	acts.enable           = {'handle':'setService', 'label':'ENS','tooltip':'Enable service.'};
+	acts.disable          = {'handle':'setService', 'label':'DIS','tooltip':'Disable service.'};
+	acts.restore_defaults = {'handle':'mh_Oper',    'label':'DEF','tooltip':'Restore default farm settings.'};
+	i_monitor.createCtrlBtn({'name':'services','label':'SRV','tooltip':'Enable/Disable serivrs\nRestore defaults.','sub_menu':acts});
+
+
+	var el = document.createElement('div');
+	i_monitor.elPanelL.appendChild( el);
+	el.classList.add('ctrl_button');
+	el.textContent = 'CMD';
+	el.monitor = i_monitor;
+	el.onclick = function(e){ e.currentTarget.monitor.showMenu(e,'cmd'); return false;}
+	el.oncontextmenu = el.onclick;
+
+	// Admin related functions:
+	if( ! g_GOD()) return;
+
+	// Power/WOL:
+	var acts = {};
+	acts.wol_sleep = {'label':'WSL','tooltip':'Wake-On-Lan sleep.'};
+	acts.wol_wake  = {'label':'WWK','tooltip':'Wake-On-Lan wake.'};
+	acts.exit      = {'label':'EXT','tooltip':'Exit client.'};
+	acts.reboot    = {'label':'REB','tooltip':'Reboot machine.'};
+	acts.shutdown  = {'label':'SHD','tooltip':'Shutdown machine.'};
+	acts.delete    = {'label':'DEL','tooltip':'Delete render from Afanasy database.'};
+	i_monitor.createCtrlBtn({'name':'power','label':'POW','tooltip':'Power / Exit / Delete.','sub_menu':acts});
+}
+
 RenderNode.actions = [];
 
-RenderNode.actions.push({"mode":'context', "name":'log',       "handle":'mh_Get', "label":'Show Log'});
 RenderNode.actions.push({"mode":'context', "name":'tasks_log', "handle":'mh_Get', "label":'Tasks Log'});
 RenderNode.actions.push({"mode":'context', "name":'full',      "handle":'mh_Get', "label":'Full Info'});
 RenderNode.actions.push({"mode":'context'});
@@ -475,26 +572,13 @@ RenderNode.actions.push({"mode":'context'});
 RenderNode.actions.push({"mode":'context', "name":'eject_tasks',         "handle":'mh_Oper', "label":'Eject Tasks'});
 RenderNode.actions.push({"mode":'context', "name":'eject_tasks_keep_my', "handle":'mh_Oper', "label":'Eject Not My'});
 
-RenderNode.actions.push({"mode":'set', "name":'priority',  "type":'num', "handle":'mh_Dialog', "label":'Priority'});
-RenderNode.actions.push({"mode":'set', "name":'capacity',  "type":'num', "handle":'mh_Dialog', "label":'Capacity'});
-RenderNode.actions.push({"mode":'set', "name":'max_tasks', "type":'num', "handle":'mh_Dialog', "label":'Maximum Tasks'});
-RenderNode.actions.push({"mode":'set', "name":'restore_defaults', "handle":'mh_Oper', "label":'Restore Defaults'});
-RenderNode.actions.push({"mode":'set'});
-RenderNode.actions.push({"mode":'set', "name":'enable',  "handle":'mh_Service', "label":'Enable Service'});
-RenderNode.actions.push({"mode":'set', "name":'disable', "handle":'mh_Service', "label":'Disable Service'});
-RenderNode.actions.push({"mode":'set'});
-RenderNode.actions.push({"mode":'set', "name":'hidden',     "type":'bl1', "handle":'mh_Dialog', "label":'Hide/Unhide'});
-RenderNode.actions.push({"mode":'set'});
-RenderNode.actions.push({"mode":'set', "name":'user_name',  "type":'str', "handle":'mh_Dialog', "label":'User Name'});
-RenderNode.actions.push({"mode":'set'});
-RenderNode.actions.push({"mode":'set', "name":'annotation', "type":'str', "handle":'mh_Dialog', "label":'Annotation'});
-
-RenderNode.actions.push({"mode":'pow', "name":'wol_sleep', "handle":'mh_Oper', "label":'WOL Sleep'});
-RenderNode.actions.push({"mode":'pow', "name":'wol_wake' , "handle":'mh_Oper', "label":'WOL Wake'});
-RenderNode.actions.push({"mode":'pow', "name":'exit',      "handle":'mh_Oper', "label":'Exit Client'});
-RenderNode.actions.push({"mode":'pow', "name":'reboot',    "handle":'mh_Oper', "label":'Reboot Machine'});
-RenderNode.actions.push({"mode":'pow', "name":'shutdown',  "handle":'mh_Oper', "label":'Shutdown Machine'});
-RenderNode.actions.push({"mode":'pow', "name":'delete',    "handle":'mh_Oper', "label":'Delete From DB'});
+RenderNode.params = {};
+RenderNode.params.priority   = {"type":'num', "label":'Priority'};
+RenderNode.params.capacity   = {"type":'num', "label":'Capacity'};
+RenderNode.params.max_tasks  = {"type":'num', "label":'Maximum Tasks'};
+RenderNode.params.user_name  = {"type":'str', "label":'User Name'};
+RenderNode.params.annotation = {"type":'str', "label":'Annotation'};
+RenderNode.params.hidden     = {"type":'bl1', "label":'Hide/Unhide'};
 
 RenderNode.sort = ['priority','user_name','name'];
 RenderNode.filter = ['user_name','name','host_name'];

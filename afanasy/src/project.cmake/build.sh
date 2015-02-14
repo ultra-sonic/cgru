@@ -76,6 +76,9 @@ case ${DISTRIBUTIVE} in
     RedHat)
         export AF_ADD_LFLAGS="$AF_ADD_LFLAGS -lpthread -ldl"
         ;;
+    Mageia)
+        export AF_EXTRA_LIBS="pthread"
+        ;;
     MacOSX)
         export AF_PYTHON_INCLUDE_PATH="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/"
         export AF_PYTHON_LIBRARIES="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib"
