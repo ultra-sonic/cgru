@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#source setup_fbiAppLauncher.sh
+export CGRU_LOCATION=/home/omarkowski/dev/cgru
+source $CGRU_LOCATION/software_setup/setup_vray.sh
+
+#"$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -frames=$3-$4,$5 -sceneFile="$2"
+#/usr/local/REPOSITORY/VRAY/$VRAY_VERSION/Linux/2012/vray/bin/vray -autoclose=1 -display=0 -frames=$3-$4,$5 -sceneFile="$2" 
+
+"$VRAY_BIN_DIR/vray.bin" --help
