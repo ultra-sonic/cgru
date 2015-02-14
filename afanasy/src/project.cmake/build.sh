@@ -31,8 +31,8 @@ export AF_GUI=$gui
 
 cgru_python="${cgru}/python"
 if [ -d "${cgru_python}" ]; then
-	export AF_PYTHON_INCLUDE_PATH="${cgru_python}/include/python3.3m"
-	export AF_PYTHON_LIBRARIES="${cgru_python}/lib/libpython3.3m.a"
+	export AF_PYTHON_INCLUDE_PATH="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/include"
+	export AF_PYTHON_LIBRARIES="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib"
 fi
 
 
@@ -72,7 +72,11 @@ case ${DISTRIBUTIVE} in
     CentOS)
         export ADD_CMAKE_MODULE_PATH="$PWD"
         export AF_EXTRA_LIBS="pthread"
+<<<<<<< HEAD
 	;;
+=======
+        ;;
+>>>>>>> 22c307c07562bca34d5a9e8818ea42cad384197f
     RedHat)
         export AF_ADD_LFLAGS="$AF_ADD_LFLAGS -lpthread -ldl"
         ;;
@@ -80,7 +84,9 @@ case ${DISTRIBUTIVE} in
         export AF_EXTRA_LIBS="pthread"
         ;;
     MacOSX)
-        ;;
+        export AF_PYTHON_INCLUDE_PATH="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/"
+        export AF_PYTHON_LIBRARIES="/opt/local//Library/Frameworks/Python.framework/Versions/2.7/lib/libpython2.7.dylib"
+	;;
     *)
         echo "Warning: Untested system: '${DISTRIBUTIVE}'"
         ;;

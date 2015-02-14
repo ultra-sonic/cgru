@@ -1,6 +1,6 @@
 {"cgru_config":{
 
-	"af_servername":"127.0.0.1",
+	"af_servername":"192.168.2.63",
 		"":"User server name or direct IP address literals",
 
 	"af_serverport":51000,

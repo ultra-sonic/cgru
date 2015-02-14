@@ -70,7 +70,9 @@ logrotate() {
    return 0
 }
 
-execfile="$afroot/bin/$afapp"
+OS=`uname -s`
+PYTHONVERSION=`python -c 'import platform; print(platform.python_version())'`
+execfile="$afroot/bin_${OS}_Python_${PYTHONVERSION}/$afapp"
 startcmd="$afroot/init/afstart.sh $execfile $logfile"
 
 function start(){
