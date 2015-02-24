@@ -3,15 +3,10 @@ echo "####### setup_vray.sh ########"
 
 
 export VRAY_REPO=/opt/vray
-export VRAY_RELEASETYPE=official
-export VRAY_VERSION=24002
 export OS=`uname -s`
-export HOST_APP=Maya
-#export HOST_APP=Max
-export HOST_APP_VERSION=2015
 
 export VRAY_AUTH_CLIENT_FILE_PATH=${VRAY_REPO}
-export VRAY_ROOT=${VRAY_REPO}/${VRAY_RELEASETYPE}/${VRAY_VERSION}/${OS}/${HOST_APP}/${HOST_APP_VERSION}
+export VRAY_ROOT=${VRAY_REPO}/${VRAY_RELEASETYPE}/${VRAY_VERSION}/${OS}/${HOST_APPLICATION}/${HOST_APPLICATION_VERSION}
 
 #VRAY 2.4 Maya
 export VRAY_BIN_DIR=${VRAY_ROOT}/vray/bin
