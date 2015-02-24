@@ -1,8 +1,12 @@
 #!/bin/bash
 
-#source setup_fbiAppLauncher.sh
+# source setup_fbiAppLauncher.sh
+export VRAY_RELEASETYPE=$1 # official
+export VRAY_VERSION=$2 # 24002
+export HOST_APPLICATION=$3 # Maya
+export HOST_APPLICATION_VERSION=$4 # 2015
+
 export CGRU_LOCATION=/home/omarkowski/dev/cgru
 source $CGRU_LOCATION/software_setup/setup_vray.sh
 
-#"$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -frames=$3-$4,$5 -sceneFile="$2"
-"$VRAY_BIN_DIR/vray.bin" -autoclose=1 -display=0 $@
+"$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8
