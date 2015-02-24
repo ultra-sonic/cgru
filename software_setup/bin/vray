@@ -6,7 +6,6 @@ export VRAY_VERSION=$2 # 24002
 export HOST_APPLICATION=$3 # Maya
 export HOST_APPLICATION_VERSION=$4 # 2015
 
-export CGRU_LOCATION=/home/omarkowski/dev/cgru
-source $CGRU_LOCATION/software_setup/setup_vray.sh
+source ${CGRU_LOCATION}/software_setup/setup_vray.sh
 
 "$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8
