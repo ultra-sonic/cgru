@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# source setup_fbiAppLauncher.sh
+# source fb_setupEnvironment.sh # todo
 export VRAY_RELEASETYPE=$1 # official
 export VRAY_VERSION=$2 # 24002
 export HOST_APPLICATION=$3 # Maya
@@ -10,4 +10,9 @@ source ${CGRU_LOCATION}/software_setup/setup_vray.sh
 
 LOCAL_IMAGE_PATH=/data_local/$9
 mkdir -p `dirname ${LOCAL_IMAGE_PATH}`
+
+echo "##########################"
+echo "# commandline arguments: #"
+echo $@
+echo "##########################"
 "$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8 -imgFile="${LOCAL_IMAGE_PATH}"
