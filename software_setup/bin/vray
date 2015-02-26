@@ -8,4 +8,4 @@ export HOST_APPLICATION_VERSION=$4 # 2015
 
 source ${CGRU_LOCATION}/software_setup/setup_vray.sh
 
-"$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8 -imgFile="$9"
+"$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8 -imgFile="/data_local/$9"
