@@ -4,7 +4,7 @@ RULES.rufolder = 'rules';
 RULES_TOP = {};
 
 c_movieTypes = ['mpg','mpeg','mov','avi','mp4','m4v','ogg','mxf','flv'];
-c_movieTypesHTML = ['ogg'];
+c_movieTypesHTML = ['mp4','ogg'];
 c_imageTypes = ['jpg','jpeg','png','exr','dpx','tga','tif','tiff','psd','xcf'];
 c_imageEditableTypes = ['jpg','jpeg','png'];
 c_archives = ['zip','rar','7z','001'];
@@ -231,15 +231,17 @@ function c_ElDisplayToggle( i_el)
 		i_el.style.display = 'none';
 }
 
-function c_CanAssignArtists( i_user) { return c_IsUserStateSet( i_user,'assignart'); }
-function c_CanEditPlaylist(  i_user) { return c_IsUserStateSet( i_user,'playlist' ); }
 function c_IsNotAnArtist(    i_user) { return c_IsUserStateSet( i_user,'notart'   ); }
-function c_IsUserStateSet( i_user, i_state)
+function c_CanEditPlaylist(  i_user) { return c_IsUserStateSet( i_user,'playlist' ); }
+function c_CanAssignArtists( i_user) { return c_IsUserStateSet( i_user,'assignart'); }
+function c_CanEditTasks(     i_user) { return c_IsUserStateSet( i_user,'edittasks'); }
+function c_CanEditBody(      i_user) { return c_IsUserStateSet( i_user,'editbody'); }
+function c_IsUserStateSet(   i_user, i_state)
 {
 	if( i_user == null ) i_user = g_auth_user;
 	if( i_user == null ) return false;
 
-	if((['assignart','playlist']).indexOf( i_state ) != -1 )
+	if((['playlist','assignart','edittasks','editbody']).indexOf( i_state ) != -1 )
 		if((['admin','coord','user']).indexOf( i_user.role ) != -1 ) return true;
 
 	if( i_user.states == null ) return false;
@@ -398,6 +400,18 @@ function c_CreateOpenButton( i_el, i_path, i_type)
 	el.setAttribute('cmdexec', JSON.stringify([cmd]));
 	el.title = 'Open location in a file browser.\nRMB "Run" menu item.'
 	return el;
+}
+
+function c_FileDragStart( i_evt, i_path)
+{
+	var el = i_evt.currentTarget;
+	var path = cgru_PM('/' + RULES.root + i_path);
+	if( cgru_Platform.indexOf('windows') == -1 )
+		path = 'file://' + path;
+	var dt = i_evt.dataTransfer;
+	dt.setData('text/plain', path);
+	dt.setData('text/uri-list', path);
+//console.log(path);
 }
 
 function c_GetRuFilePath( i_file ) { return RULES.root + g_CurPath() + '/' + RULES.rufolder + '/' + i_file; }

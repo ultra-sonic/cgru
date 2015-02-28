@@ -11,6 +11,8 @@ ad_states.notart    = {"short":'NA',"label":'NotArt',"tooltip":'Not an artist.'}
 ad_states.passwd    = {"short":'PS',"label":'Passwd',"tooltip":'Can change password.'};
 ad_states.playlist  = {"short":'PL',"label":'Playlist',"tooltip":'Can edit playlist.'};
 ad_states.assignart = {"short":'AA',"label":'AssignArt',"tooltip":'Can assign artists.'};
+ad_states.edittasks = {"short":'TS',"label":'EditTasks',"tooltip":'Can edit tasks.'};
+ad_states.editbody  = {"short":'BD',"label":'EditBody',"tooltip":'Can edit body.'};
 
 function ad_Init()
 {
@@ -1076,16 +1078,16 @@ function ad_DisableUser( i_user_id)
 
 function ad_DeleteUserOnClick()
 {
-	if( g_users[i_user_id] == null )
-	{
-		c_Error('User "' + i_user_id + '" does not exist.');
-		return;
-	}
 	new cgru_Dialog({"handle":'ad_DeleteUser',
 		"name":'users',"title":'Delete User',"info":'Enter user login name to <b>delete</b>:'});
 }
 function ad_DeleteUser( i_user_id)
 {
+	if( g_users[i_user_id] == null )
+	{
+		c_Error('User "' + i_user_id + '" does not exist.');
+		return;
+	}
 	n_Request({"send":{"disableuser":{"uid":i_user_id}},"func":ad_ChangesFinished,
 		"ad_func":ad_WndRefresh,"ad_msg":'User "'+i_user_id+'" deleted.'});
 }
