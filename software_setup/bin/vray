@@ -8,12 +8,13 @@ export HOST_APPLICATION_VERSION=$4 # 2015
 
 source ${CGRU_LOCATION}/software_setup/setup_vray.sh
 
-LOCAL_IMAGE_PATH=/data_local$9
+TMP_FOLDER=/data_local
+LOCAL_IMAGE_PATH=${TMP_FOLDER}$9
 mkdir -p `dirname ${LOCAL_IMAGE_PATH}`
 
 echo "##########################"
 echo "# commandline arguments: #"
 echo $@
 echo "##########################"
-"$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8 -imgFile="${LOCAL_IMAGE_PATH}"
-python -c "import fbcloudrender;fbcloudrender.upload_image_s3( '${LOCAL_IMAGE_PATH}' , '/data_local' , $6 , $7 , $8 )"
+# "$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8 -imgFile="${LOCAL_IMAGE_PATH}"
+python -c "import fbcloudrender;fbcloudrender.upload_image_s3( '$5' , '${LOCAL_IMAGE_PATH}' , '${TMP_FOLDER}' , $6 , $7 , $8 )"
