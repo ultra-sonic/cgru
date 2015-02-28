@@ -16,4 +16,4 @@ echo "# commandline arguments: #"
 echo $@
 echo "##########################"
 "$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8 -imgFile="${LOCAL_IMAGE_PATH}"
-python -c "import fbcloudrender;fbcloudrender.upload_image_s3( '${LOCAL_IMAGE_PATH}' , '/data_local' )"
+python -c "import fbcloudrender;fbcloudrender.upload_image_s3( '${LOCAL_IMAGE_PATH}' , '/data_local' , $6 , $7 , $8 )"
