@@ -1,6 +1,6 @@
 {"cgru_config":{
 
-	"af_servername":"52.16.23.120",
+	"af_servername":"afserver.fullblownimages.com",
 		"":"User server name or direct IP address literals",
 
 	"af_serverport":51000,
