@@ -18,5 +18,9 @@ echo "##########################"
 #render here
 "$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8 -imgFile="${LOCAL_IMAGE_PATH}"
 #upload here
-echo "starting upload..."
-python -c "import fbcloudrender;fbcloudrender.upload_image_s3( '$5' , '${LOCAL_IMAGE_PATH}' , '${DATA_LOCAL}' , $6 , $7 , $8 )"
+if [ $? = 0 ] ; then
+	echo "starting upload..." ;
+	python -c "import fbcloudrender;fbcloudrender.upload_image_s3( '$5' , '${LOCAL_IMAGE_PATH}' , '${DATA_LOCAL}' , $6 , $7 , $8 )" ;
+else
+	echo "got non-zero exitcode - not uploading anything - it seems your render failed..." ;
+fi
