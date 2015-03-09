@@ -88,19 +88,6 @@ function Monitor( i_args)
 	if( this.nodeConstructor.createPanels )
 		this.nodeConstructor.createPanels( this);
 
-	if( this.type == 'users')
-	{
-		var el = this.document.createElement('div');
-		this.elPanelL.appendChild( el);
-		this.elPanelL.m_elSet = el;
-		el.classList.add('ctrl_button');
-		el.textContent = 'SET';
-		el.title = 'Set parameter.';
-		el.monitor = this;
-		el.onclick = function(e){ e.currentTarget.monitor.showMenu(e); return false;}
-		el.oncontextmenu = el.onclick;
-	}
-
 	// Parameters section:
 	var el = document.createElement('div');
 	this.elPanelR.appendChild( el);
@@ -582,8 +569,12 @@ Monitor.prototype.delNodes = function( i_ids)
 				if( this.panel_item == this.items[i] )
 					this.resetPanels();
 
+				if( this.items[i].selected )
+					this.selected_items.splice( this.selected_items.indexOf( this.items[i]), 1);
+
 				this.elList.removeChild( this.items[i].element);
 				this.items.splice(i,1);
+
 				break;
 			}
 }
@@ -848,7 +839,9 @@ Monitor.prototype.updatePanels = function( i_item)
 		}
 
 		var value = i_item.params[p];
-		if(( typeof value ) == 'string' )
+		if( this.nodeConstructor.params[p].type == 'hrs')
+			value = cm_TimeStringFromSeconds( value, true);
+		else if(( typeof value ) == 'string' )
 		{
 			// word-wrap long regular expressions:
 			value = value.replace(/\./g,'.&shy;');
@@ -873,20 +866,12 @@ Monitor.prototype.onContextMenu = function( i_evt, i_el)
 		this.selectAll( false);
 	this.setSelected( i_el.item, true);
 
-	if(( i_el.item.onContextMenu == null ) && ( i_el.item.constructor.actions == null ))
-		return false;
-
-	var menu = this.createMenu( i_evt,'context');
 	if( i_el.item.onContextMenu )
-		i_el.item.onContextMenu( menu);
-	else
 	{
-		var actions = i_el.item.constructor.actions;
-		for( var i = 0; i < actions.length; i++)
-			if( actions[i].mode == 'context' )
-				this.addMenuItem( menu, actions[i]);
+		var menu = this.createMenu( i_evt,'context');
+		i_el.item.onContextMenu( menu);
+		menu.show();
 	}
-	menu.show();
 
 	return false;
 }
@@ -1007,7 +992,6 @@ Monitor.prototype.mh_Get = function( i_param, i_evt)
 
 	get = {"type":this.type,"ids":[this.cur_item.params.id],"mode":i_param.name};
 	nw_request({"send":{"get":get},"func":g_ShowObject,"evt":i_evt,"wnd":this.window});
-//	nw_GetNodes( this.type, [this.cur_item.params.id], i_param.name);
 }
 
 Monitor.prototype.action = function( i_operation, i_params)
@@ -1160,7 +1144,8 @@ Monitor.prototype.createCtrlBtns = function( i_acts)
 {
 	for( var a in i_acts )
 	{
-		i_acts[a].name = a;
+		if( i_acts[a].name == null )
+			i_acts[a].name = a;
 		this.createCtrlBtn( i_acts[a]);
 	}
 }
@@ -1204,7 +1189,7 @@ Monitor.prototype.createCtrlBtn = function( i_args)
 		for( var a in acts )
 		{
 			acts[a].sub_button = true;
-			acts[a].name = a;
+			if( acts[a].name == null ) acts[a].name = a;
 			acts[a].elParent = elBtn;
 			if( acts[a].handle == null ) acts[a].handle = i_args.handle;
 			var el = this.createCtrlBtn( acts[a]);
@@ -1233,7 +1218,7 @@ Monitor.ctrlBtnClicked = function(e)
 	if( elBtn.classList.contains('active') != true )
 		return false;
 
-	var args = {"name":el.m_act.name,"type":el.m_act.type,"monitor":el.m_monitor};
+	var args = {'name':el.m_act.name,'type':el.m_act.type,'value':el.m_act.value,'monitor':el.m_monitor};
 
 	var handle = el.m_act.handle;
 	if( handle == null )

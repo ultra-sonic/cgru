@@ -8,11 +8,19 @@ export HOST_APPLICATION_VERSION=$4 # 2015
 
 source ${CGRU_LOCATION}/software_setup/setup_vray.sh
 
-LOCAL_IMAGE_PATH=/data_local/$9
+LOCAL_IMAGE_PATH=${DATA_LOCAL}$9
 mkdir -p `dirname ${LOCAL_IMAGE_PATH}`
 
 echo "##########################"
 echo "# commandline arguments: #"
 echo $@
 echo "##########################"
+#render here
 "$VRAY_BIN_DIR/vray" -autoclose=1 -display=0 -sceneFile="$5" -frames=$6-$7,$8 -imgFile="${LOCAL_IMAGE_PATH}"
+#upload here
+if [ $? = 0 ] ; then
+	echo "starting upload..." ;
+	python -c "import fbcloudrender;fbcloudrender.upload_image_s3( '$5' , '${LOCAL_IMAGE_PATH}' , '${DATA_LOCAL}' , $6 , $7 , $8 )" ;
+else
+	echo "got non-zero exitcode - not uploading anything - it seems your render failed..." ;
+fi

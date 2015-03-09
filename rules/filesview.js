@@ -5,6 +5,8 @@ fv_thumbnails_tomake_files = [];
 
 fv_cur_item = null;
 
+fv_first_created = false;
+
 if( localStorage.filesview == null ) localStorage.filesview = '0';
 
 function fv_Finish()
@@ -15,6 +17,16 @@ function fv_Finish()
 
 function FilesView( i_args)
 {
+	if( ! fv_first_created )
+	{
+		window.document.body.addEventListener('keydown', function(e){
+			if( e.keyCode == 27 ) // ESC
+				for( var i = 0; i < fv_views.length; i++)
+					fv_views[i].selectAll( false);
+		});
+	}
+	fv_first_created = true;
+
 	this.elParent = i_args.el;
 	this.path = i_args.path;
 	this.walk = i_args.walk;
@@ -122,7 +134,7 @@ genetate thumbnails.";
 	el.style.backgroundImage = 'url(rules/icons/archive.png)';
 	el.m_view = this;
 	el.onclick = function(e){ e.currentTarget.m_view.archivate();}
-	el.title = 'Archivate foles and folders';
+	el.title = 'Archive foles and folders';
 
 	var el = document.createElement('div');
 	this.elPanel.appendChild( el);
@@ -500,6 +512,10 @@ FilesView.prototype.showItem = function( i_obj, i_isFolder)
 	}
 	elItem.classList.add( type);
 
+	// Drag&Drop:
+	elItem.draggable = 'true';
+	elItem.ondragstart = function(e){ c_FileDragStart( e, e.currentTarget.m_path);}
+
 	// Anchor Icon:
 	var elAnchor = null;
 	if( i_isFolder )
@@ -520,6 +536,9 @@ FilesView.prototype.showItem = function( i_obj, i_isFolder)
 			elAnchor.textContent = '@';
 	}
 	elAnchor.href = g_GetLocationArgs({"fv_Goto":path});
+//	elAnchor.m_path = path;
+//	elAnchor.draggable = 'true';
+//	elAnchor.ondragstart = function(e){ c_FileDragStart( e, e.currentTarget.m_path);}
 
 	// Thumbnail:
 	if( this.has_thumbs )
@@ -976,7 +995,7 @@ FilesView.prototype.archivate = function()
 	if( args.paths.length < 1 )
 		c_Error('No items selected.');
 	else
-		fu_Archivate( args);
+		fu_Archive( args);
 }
 
 FilesView.prototype.getItemPath = function( i_path)

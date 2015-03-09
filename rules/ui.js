@@ -81,6 +81,23 @@ function u_InitAuth()
 
 function u_Process()
 {
+	if( RULES.annotations )
+		for( var name in RULES.annotations )
+		{
+			var elDiv = document.createElement('div');
+			$('annotations').appendChild( elDiv);
+
+			var el = document.createElement('div');
+			elDiv.appendChild( el);
+			el.classList.add('name');
+			el.textContent = name + ':';
+
+			var el = document.createElement('div');
+			elDiv.appendChild( el);
+			el.classList.add('text');
+			el.textContent = RULES.annotations[name];
+		}
+
 	if( c_RuFileExists(RULES.thumbnail.filename))
 	{
 		u_el.thumbnail.src = c_GetRuFilePath(RULES.thumbnail.filename);
@@ -124,6 +141,7 @@ function u_Process()
 
 function u_Finish()
 {
+	$('annotations').textContent = '';
 	u_el.thumbnail.style.display = 'none';
 
 	st_Finish();
@@ -726,7 +744,8 @@ function u_BodyEditCancel( i_text)
 	if( i_text == null ) i_text = u_body_text;
 	$('body_body').innerHTML = i_text;
 
-	$('body_btn_edit').style.display = 'block';
+	if( c_CanEditBody())
+		$('body_btn_edit').style.display = 'block';
 	$('body_btn_edit_cancel').style.display = 'none';
 	$('body_panel').style.display = 'block';
 	$('body_panel_edit').style.display = 'none';
