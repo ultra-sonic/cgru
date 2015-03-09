@@ -72,11 +72,7 @@ case ${DISTRIBUTIVE} in
     CentOS)
         export ADD_CMAKE_MODULE_PATH="$PWD"
         export AF_EXTRA_LIBS="pthread"
-<<<<<<< HEAD
 	;;
-=======
-        ;;
->>>>>>> 22c307c07562bca34d5a9e8818ea42cad384197f
     RedHat)
         export AF_ADD_LFLAGS="$AF_ADD_LFLAGS -lpthread -ldl"
         ;;
