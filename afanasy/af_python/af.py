@@ -7,10 +7,8 @@ import re
 import sys
 import time
 
-import cgruconfig
-import cgrupathmap
+from cgru_python import cgruconfig, cgrupathmap
 import afnetwork
-import services  # this seems unneccessary not used
 
 Pathmap = cgrupathmap.PathMap()
 
