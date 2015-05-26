@@ -15,7 +15,7 @@
 ### END INIT INFO
 
 # Set Afanasy application:
-afapp=afserver
+afapp=afrender
 
 # Set Afanasy location:
 afroot=/opt/cgru/afanasy
