@@ -18,10 +18,10 @@
 afapp=afrender
 
 # Set Afanasy location:
-afroot=/opt/cgru/afanasy
+afroot=/NAS/renderfarm/cgru/afanasy
 
 # Afanasy "nonroot" user:
-nonrootuser=centos
+nonrootuser=bighug
 if [ -f "${afroot}/nonrootuser" ]; then
    nonrootuser=`cat "${afroot}/nonrootuser"`
 else
