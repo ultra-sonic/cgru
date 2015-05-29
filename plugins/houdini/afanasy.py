@@ -457,10 +457,9 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 				block_generate.frame_last)
 		)
 
-		if run_rop:
-			if join_render:
-				block_generate.preview = images
+		block_generate.preview = files
 
+		if run_rop:
 			if not join_render:
 				block_generate.type = 'hbatch'
 			else:
