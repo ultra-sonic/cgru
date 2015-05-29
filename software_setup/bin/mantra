@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export HOUDINI_VERSION="13.0.476"
 source $CGRU_LOCATION/software_setup/setup_houdini.sh
 
-mantra "$@"
+nice -n 10 mantra "$@"

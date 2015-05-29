@@ -1,9 +1,10 @@
 #!/bin/bash
 
-echo "##############################################"	
-source ./setup_fbiAppLauncher.sh
-source /mnt/data-1/REPOSITORY/setup_all.sh
-echo "##############################################"	
+#echo "##############################################"	
+#source ./setup_fbiAppLauncher.sh
+#source /mnt/data-1/REPOSITORY/setup_all.sh
+#echo "##############################################"
+export HOUDINI_VERSION="13.0.476"
 source $CGRU_LOCATION/software_setup/setup_houdini.sh
 
-hython ${HOUDINI_CGRU_PATH}/hrender_af.py "$@"
+nice -10 hython ${HOUDINI_CGRU_PATH}/hrender_af.py "$@"
