@@ -1,3 +1,5 @@
+#Houdini OTL backups
+plugins/houdini/backup
 # Settings
 config.json
 farm.json
