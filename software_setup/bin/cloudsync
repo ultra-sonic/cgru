@@ -1,0 +1,5 @@
+#!/bin/bash
+OCR_DIR=`dirname ${CGRU_LOCATION'
+export PYTHONPATH=$PYTHONPATH:$OCR_DIR
+echo "DATA BUCKET NAME: "$1
+python -c "import opencloudrender.s3IO as ocrs3;ocr.upload_file( $1 , $2 , strip_path_prefix='' )"
