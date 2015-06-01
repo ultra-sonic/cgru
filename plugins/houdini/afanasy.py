@@ -397,11 +397,26 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 			BlockParameters(afnode, ropnode, subblock, prefix, frame_range)
 		blockname = block_generate.name
 		block_generate.name += '-G'
+		block_generate.capacity = 300
 
 		if not block_generate.valid:
 			return None
 
+		# opencloudrender S3 sync
+		block_ocr = \
+			BlockParameters(afnode, ropnode, subblock, prefix, frame_range)
+		block_ocr.name += '-CLOUDSYNC'
+		block_ocr.capacity = 1
+		block_ocr.type='cloudsync'
+
+		if not block_ocr.valid:
+			return None
+
 		run_rop = afnode.parm('sep_run_rop').eval()
+		use_ocr = False
+		use_ocr_parm = afnode.parm('use_opencloudrender')
+		if use_ocr_parm!=None:
+			use_ocr = use_ocr_parm.eval()
 		read_rop = afnode.parm('sep_read_rop_params').eval()
 		join_render = afnode.parm('sep_join').eval()
 		tile_render = afnode.parm('sep_tile').eval()
@@ -457,11 +472,10 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 				block_generate.frame_last)
 		)
 
-		block_generate.preview = files
-
 		if run_rop:
 			if not join_render:
 				block_generate.type = 'hbatch'
+				block_generate.preview = files
 			else:
 				block_generate.type = 'hbatch_mantra'
 				block_generate.cmd = block_generate.cmd.replace(
@@ -479,7 +493,11 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 			block_render.cmd = 'mantra'
 			block_render.type = block_render.cmd
 			if run_rop:
-				block_render.dependmask = block_generate.name
+				if use_ocr:
+					block_ocr.dependmask = block_generate.name
+					block_render.dependmask = block_ocr.name
+				else:
+					block_render.dependmask = block_generate.name
 
 			if tile_render or del_rop_files or use_tmp_img_folder:
 				block_render.cmd = 'mantrarender '
@@ -545,6 +563,9 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 
 		if run_rop:
 			params.append(block_generate)
+			if use_ocr:
+				block_ocr.cmd = 'cloudsync @#@ @#@ {0} {1}'.format( block_ocr.frame_inc , files )
+				params.append(block_ocr)
 
 	else:
 		params.append(
