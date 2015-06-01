@@ -413,10 +413,6 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 			return None
 
 		run_rop = afnode.parm('sep_run_rop').eval()
-		use_ocr = False
-		use_ocr_parm = afnode.parm('use_opencloudrender')
-		if use_ocr_parm!=None:
-			use_ocr = use_ocr_parm.eval()
 		read_rop = afnode.parm('sep_read_rop_params').eval()
 		join_render = afnode.parm('sep_join').eval()
 		tile_render = afnode.parm('sep_tile').eval()
@@ -424,6 +420,15 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 		tile_divy = afnode.parm('sep_tile_divy').eval()
 		use_tmp_img_folder = afnode.parm('sep_use_tmp_img_folder').eval()
 		del_rop_files = afnode.parm('sep_del_rop_files').eval()
+
+		# opencloudrender
+		use_ocr = False
+		use_ocr_parm = afnode.parm('use_opencloudrender')
+		if use_ocr_parm!=None:
+			use_ocr = use_ocr_parm.eval()
+		data_bucket_name_parm = afnode.parm('data_bucket_name')
+		if data_bucket_name_parm!=None:
+			data_bucket_name = data_bucket_name_parm.eval()
 
 		if read_rop or run_rop:
 			if not block_generate.ropnode:
@@ -496,6 +501,9 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 				if use_ocr:
 					block_ocr.dependmask = block_generate.name
 					block_render.dependmask = block_ocr.name
+					# DEBUG hostmask for ocr
+					block_render.hosts_mask = '.*compute.*'
+					print "setting host_mask"
 				else:
 					block_render.dependmask = block_generate.name
 
@@ -564,7 +572,7 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 		if run_rop:
 			params.append(block_generate)
 			if use_ocr:
-				block_ocr.cmd = 'cloudsync @#@ @#@ {0} {1}'.format( block_ocr.frame_inc , files )
+				block_ocr.cmd = 'cloudsync {0} {1}'.format( data_bucket_name , files )
 				params.append(block_ocr)
 
 	else:
