@@ -1,4 +1,7 @@
 #!/bin/bash
+echo "---------------------------------------------------------------"
+echo "----- setup_houdini.sh"
+echo "---------------------------------------------------------------"
 
 # Source general for all soft directives:
 # source "$CGRU_LOCATION/software_setup/setup__all.sh"

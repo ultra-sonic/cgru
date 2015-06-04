@@ -1,5 +1,10 @@
 #!/bin/bash
-
+echo "---------------------------------------------------------------"
+echo "----- setup_python.sh"
+echo "---------------------------------------------------------------"
+HOSTNAME=`hostname`
+echo "HOSTNAME: $HOSTNAME"
+echo "---------------------------------------------------------------"
 if [ -f /opt/python2.7/bin/python ] 
 then
     # custom Python 2.7 installation on CentOS
