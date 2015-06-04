@@ -22,6 +22,7 @@ export CGRU_VERSION=`cat version.txt`
 echo "CGRU_VERSION $CGRU_VERSION : '$CGRU_LOCATION'"
 
 # Source custom setup if any exists:
-for setup_file in ./setup_*.sh; do
-	source $setup_file ""
-done
+# for setup_file in ./setup_*.sh; do
+# 	source $setup_file ""
+# done
+source ./setup_afanasy.sh
