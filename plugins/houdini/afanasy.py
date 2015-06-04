@@ -458,22 +458,25 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 				)
 
 		if read_rop:
-			images = ropnode.parm('vm_picture')
-			files = ropnode.parm('soho_diskfile')
-			afnode.parm('sep_images').set(images.unexpandedString())
-			afnode.parm('sep_files').set(files.unexpandedString())
+			images_parm = ropnode.parm('vm_picture')
+			files_parm = ropnode.parm('soho_diskfile')
+			#afnode.parm('sep_images').set(images.unexpandedString())
+			#afnode.parm('sep_files').set(files.unexpandedString())
+		else:
+			images_parm = afnode.parm('sep_images')
+			files_parm  = afnode.parm('sep_files')
 
 		images = afcommon.patternFromPaths(
-			afnode.parm('sep_images').evalAsStringAtFrame(
+			images_parm.evalAsStringAtFrame(
 				block_generate.frame_first),
-			afnode.parm('sep_images').evalAsStringAtFrame(
+			images_parm.evalAsStringAtFrame(
 				block_generate.frame_last)
 		)
 
 		files = afcommon.patternFromPaths(
-			afnode.parm('sep_files').evalAsStringAtFrame(
+			files_parm.evalAsStringAtFrame(
 				block_generate.frame_first),
-			afnode.parm('sep_files').evalAsStringAtFrame(
+			files_parm.evalAsStringAtFrame(
 				block_generate.frame_last)
 		)
 
@@ -536,10 +539,14 @@ def getBlockParameters(afnode, ropnode, subblock, prefix, frame_range):
 					block_render.cmd += ' -R '
 				else:
 					block_render.cmd += ' -V a '
-				block_render.cmd += afcommon.patternFromPaths(
-					afnode.parm('sep_render_arguments').evalAsStringAtFrame(block_generate.frame_first),
-					afnode.parm('sep_render_arguments').evalAsStringAtFrame(block_generate.frame_last)
-				)
+
+				if read_rop:
+					block_render.cmd += '-f ' + files
+				else:
+					block_render.cmd += afcommon.patternFromPaths(
+						afnode.parm('sep_render_arguments').evalAsStringAtFrame(block_generate.frame_first),
+						afnode.parm('sep_render_arguments').evalAsStringAtFrame(block_generate.frame_last)
+					)
 				block_render.preview = images
 
 		if tile_render:

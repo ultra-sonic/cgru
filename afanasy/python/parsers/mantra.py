@@ -11,10 +11,11 @@ IMAGE = 'Generating Image:'
 IMAGE_len = len(IMAGE)
 
 Warnings = []
-Errors = ['No licenses could be found to run this application',
+Errors = ['Error',
+		  'Fatal',
+		  'No licenses could be found to run this application',
 		  'Please check for a valid license server host',
 		  'Failed to create file',
-		  'Fatal error',
 		  'Unable to access file',
 		  'Unable to load texture',
 		  'Bad Alembic Archive']
